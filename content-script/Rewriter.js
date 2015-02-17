@@ -7,45 +7,65 @@
  * @author https://github.com/Peshmelba
  */
 
+var env = 'dev';
+function debug(msg){ if(env=='dev')console.log(msg); }
+
+
 window.onload = main;
+
+/**
+ * Array of rules.
+ * @type {Array}
+ */
+var rules = [];
+/**
+ * A rule.
+ * @type {Rule}
+ */
+var rule = new Rule();
+
 
 
 function main()
 {
-	console.log('Rewriter is running');
+	debug('Rewriter is running');
 
-  var rules = restore_rules();
-  var rule;
-  if (rules.lenght < 0)
-    console.log('No rules were stored.');
-  else
-  {
-    for (var i in rules)
-    {
-    // do test (page url == rule.url)
-    // rewrite stuffs for each match
-      rule = rules[i];
-      console.log(rule.toString());
-    }
-  }
+  document.addEventListener('RW-merged', function() {
+    if (rules.length <= 0)
+        debug('No rules were stored.');
+      else
+      {
+        debug(rules.length.toString() + ' rules loaded :');
+        for (var i in rules)
+        {
+        // do test (page url == rule.url)
+        // rewrite stuffs for each match
+          rule = rules[i];
+          debug(rule.toString());
+        }
+      }
+  });
+  
+  restore_rules();
 }
 
 function save_rules() {
   chrome.storage.sync.set({ rules : rules }, function() {
-    console.log('saved rules');
+    debug('saved rules');
   });
 }
 
 function restore_rules() {
   chrome.storage.sync.get({ rules : [] }, function(items) {
-    console.log('restored rules');
-    return items.rules;
+    debug('restored rules');
+    rules = items.rules;
+    document.dispatchEvent(new Event('RW-merged'));
   });
 }
 
 function clear_rules() {
   chrome.storage.sync.clear();
-  console.log('cleared rules');
+  debug('cleared rules');
 }
 
 /**
