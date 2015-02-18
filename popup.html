@@ -14,25 +14,58 @@
       body {
         font-family: verdana, sans-serif;
         width: 500px;
+        text-align: center;
       }
       .header {
         width: 100%;
-        text-align: center;
+      }
+      .panel {
+        margin-bottom: 5px;
+      }
+      .creator {
+        text-align: left;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #newrule {
+        width: 83%;
+      }
+      #rules {
+        width: 100%;
+        height: 100px;
       }
     </style>
     <script src="popup.js"></script>
+    <script src="class/rule.js"></script>
   </head>
   <body>
     <div class="header">
       <img src="image/banner.png"></img>
-      <h1>ReWriter</h1>
       <hr/>
       <h3>Rules Manager</h3>
     </div>
     <div>
-      <input id='newrule' type='text'>
-      <button id='add'>Add Rule</button>
-      <textarea id='rules'></textarea>
+      <div class="panel">
+        <table class="creator">
+          <tr><td valign="top">Text to match:</td><td>
+          <input type="text" class="match"><!--
+       --><button class="addfield">+</button>
+          </td></tr><tr><td>Text to substitute:</td><td>
+          <input type="text" class="substitute">
+          </td></tr><tr><td valign="top">Url:</td><td>
+          <input type="text" class="url"><!--
+       --><button class="addfield">+</button>
+          </td></tr>
+        </table>
+      </div>
+      <div class="panel">
+        <input id="newrule" type="text">
+        <button id="addRule">Add Rule</button>
+      </div>
+      <hr/>
+      <div class="panel">
+        <textarea id="rules"></textarea>
+      </div>
     </div>
   </body>
 </html>
