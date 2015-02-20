@@ -15,6 +15,10 @@ var DOM_match;
 var DOM_substitute;
 var DOM_url;
 
+var DOM_error;
+
+var manager = new DataManager();
+
 window.onload = main;
 
 function main()
@@ -26,6 +30,7 @@ function main()
 	DOM_match = document.getElementsByClassName('match');
 	DOM_substitute = document.getElementsByClassName('substitute')[0];
 	DOM_url = document.getElementsByClassName('url');
+	DOM_error = document.getElementById('error');
 
 	DOM_addRule.addEventListener('click', add);
 
@@ -47,7 +52,8 @@ function main()
 		DOM_url[i].addEventListener('input', writerule);
 	}
 
-	writerule()
+	writerule();
+	setback();
 }
 
 function writerule()
@@ -79,13 +85,21 @@ function writerule()
 
 function add()
 {
-	// Parser la newrule pour checker sa conformité
-	
+	var rule = DOM_newrule.value;
 
-	// Ajouter la rule à la liste des rules
-	
-	DOM_rules.value +=  DOM_newrule.value;
-	DOM_rules.value += "\n";
+	if (parse(rule) != null)
+	{
+		DOM_rules.value +=  rule;
+		DOM_rules.value += "\n";
+
+		DOM_error.innerText = "";
+
+		persist(DOM_rules.value);
+	}
+	else
+	{
+		DOM_error.innerText = "Invalid rule format.";
+	}
 }
 
 function addfield()
@@ -110,27 +124,47 @@ function addfield()
 		DOM_match = document.getElementsByClassName('match');
 		DOM_url = document.getElementsByClassName('url');
 
-		writerule()
+		writerule();
 	}
 }
 
 function rmfield()
 {
-	this.parentNode.removeChild(this.previousElementSibling);
-	this.parentNode.removeChild(this.previousElementSibling);
-	// this.parentNode.removeChild(this.nextElementSibling);
-	this.parentNode.removeChild(this);	
+	this.parentNode.removeChild(this.previousElementSibling);	// remove input
+	this.parentNode.removeChild(this.previousElementSibling);	// remove br
+	this.parentNode.removeChild(this);							// remove button
 
 	DOM_match = document.getElementsByClassName('match');
 	DOM_url = document.getElementsByClassName('url');
 
-	writerule()
+	writerule();
 }
 
-// function validate(key)
-// { // valide key looks like that :
-//   // match: ("1", "2", "3") 
-// }
+function parse(key)
+{
+	var rulejson;
+	var rule = null;
+
+	try {
+		rulejson = JSON.parse('{' + (key.slice(0, -1)) + '}');
+
+		rule = new Rule(rulejson.match, rulejson.substitute, rulejson.url);
+	} catch(e)
+	{
+		console.log(e);
+	}
+	
+	return rule;
+}
+
+function findAllRules(content)
+{
+	var pattern = '^"match": \\[".*"\\], "substitute": ".*", "url": \\[".*"\\];$';
+	var mod = "gm";	//global multiline
+	var rgx = new RegExp(pattern, mod);
+
+	return content.match(rgx);
+}
 
 function newRemove()
 {
@@ -144,4 +178,51 @@ function newRemove()
 function clean(string)
 {
 	return string.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+}
+
+function persist(content)
+{
+	var keys = findAllRules(content);
+	var rules = [];
+	var rule;
+	var errors = "";
+
+	if (keys != null)
+	{
+		for (var i = 0 ; i < keys.length ; i++)
+		{
+			rule = parse(keys[i]);
+
+			if (rule != null)
+			{
+				rules.push(rule);
+			}
+			else
+			{
+				errors += "Can't save rule n°" + i + ". ";
+			}
+		}
+
+		manager.save_rules(rules);
+		DOM_error.innerText = errors;
+	}
+	else
+	{
+		DOM_error.innerText = "No valid rule found.";
+	}
+}
+
+function setback()
+{
+	var rules = [];
+	document.addEventListener('RW-merged', function() {
+		rules = manager.rules;
+		for (var i = 0 ; i < rules.length ; i++)
+		{
+			DOM_rules.value +=  rules[i].toString();
+			DOM_rules.value += "\n";
+		}
+	});
+
+	manager.restore_rules();
 }

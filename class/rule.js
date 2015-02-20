@@ -14,43 +14,45 @@
  * @method add      Add a new match key to the rule.
  * @method toString Convert the object to a string.
  */
-function Rule(match, substitute, url)
+var Rule = function (match, substitute, url)
 {
   this.match = match;
   this.substitute = substitute;
   this.url = url;
+};
 
-  this.add = function(key)
+
+
+Rule.prototype.add = function(key)
+{
+  this.match.push(key);
+};
+
+Rule.prototype.addUrl = function(url)
+{
+  this.url.push(url);
+};
+
+Rule.prototype.toString = function()
+{
+  var obj;
+
+  obj = '"match": [';
+  for (var key in this.match)
   {
-    this.match.push(key);
+    obj += '"' + this.match[key] +'", ';
   }
+  obj = obj.slice(0, -2);
 
-  this.addUrl = function(url)
+  obj += '], "substitute": ';
+  obj += '"' + this.substitute + '"';
+
+  obj += ', "url": [';
+  for (var key in this.url)
   {
-    this.url.push(url);
+    obj += '"' + this.url[key] +'", ';
   }
-
-  this.toString = function()
-  {
-    var obj;
-
-    obj = 'match: (';
-    for (var key in this.match)
-    {
-      obj += '"' + this.match[key] +'", ';
-    }
-    obj = obj.slice(0, -2);
-
-    obj += ') substitute: (';
-    obj += '"' + this.substitute + '"';
-
-    obj += ') url: (';
-    for (var key in this.url)
-    {
-      obj += '"' + this.url[key] +'", ';
-    }
-    obj = obj.slice(0, -2);
-    obj += ");";
-    return obj;
-  }
-}
+  obj = obj.slice(0, -2);
+  obj += "];";
+  return obj;
+};

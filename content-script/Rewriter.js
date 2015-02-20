@@ -11,6 +11,7 @@ var env = 'dev';
 function debug(msg){ if(env=='dev')console.log(msg); }
 
 
+// console.log((new RegExp()));
 window.onload = main;
 
 /**
@@ -22,48 +23,50 @@ var rules = [];
  * A rule.
  * @type {Rule}
  */
-var rule = new Rule();
+var rule;
 
-
+var manager = new DataManager();
 
 function main()
 {
 	debug('Rewriter is running');
 
-  document.addEventListener('RW-merged', function() {
-    if (rules.length <= 0)
-        debug('No rules were stored.');
-      else
-      {
-        debug(rules.length.toString() + ' rules loaded :');
-        for (var i in rules)
-        {
-        // do test (page url == rule.url)
-        // rewrite stuffs for each match
-          rule = rules[i];
-          debug(rule.toString());
-        }
-      }
-  });
-  
-  restore_rules();
-}
+  var rule = new Rule(["a"],"b",["c"]);
 
-function save_rules() {
-  chrome.storage.sync.set({ rules : rules }, function() {
-    debug('saved rules');
+  manager.clear_rules();
+  manager.save_rules([rule]);
+  manager.restore_rules(function (data)
+  {
+    var storedrules = data.rules;
+    for (var i = 0 ; i < storedrules.length ; i++)
+    {
+      rule = storedrules[i];
+      rules.push(new Rule(rule.match, rule.substitute, rule.url));
+      console.log(rules);
+    }
   });
-}
 
-function restore_rules() {
-  chrome.storage.sync.get({ rules : [] }, function(items) {
-    debug('restored rules');
-    rules = items.rules;
-    document.dispatchEvent(new Event('RW-merged'));
-  });
-}
 
-function clear_rules() {
-  chrome.storage.sync.clear();
-  debug('cleared rules');
+
+
+  // manager.restore_rules(function (data) {
+
+  //   rules = data.rules;
+
+  //   console.log(rules);
+  //   if (rules.length <= 0)
+  //       debug('No rules were stored.');
+  //     else
+  //     {
+  //       debug(rules.length.toString() + ' rules loaded :');
+  //       for (var i = 0; i < rules.length ; i++)
+  //       {
+  //       // do test (page url == rule.url)
+  //       // rewrite stuffs for each match
+  //         rule = rules[i];
+  //         console.log(rule);
+  //         debug(rule.toString());
+  //       }
+  //     }
+  // });
 }
