@@ -40,19 +40,24 @@ Rule.prototype.toString = function()
   obj = '"match": [';
   for (var key in this.match)
   {
-    obj += '"' + this.match[key] +'", ';
+    obj += '"' + esc(this.match[key]) +'", ';
   }
   obj = obj.slice(0, -2);
 
   obj += '], "substitute": ';
-  obj += '"' + this.substitute + '"';
+  obj += '"' + esc(this.substitute) + '"';
 
   obj += ', "url": [';
   for (var key in this.url)
   {
-    obj += '"' + this.url[key] +'", ';
+    obj += '"' + esc(this.url[key]) +'", ';
   }
   obj = obj.slice(0, -2);
   obj += "];";
   return obj;
 };
+
+function esc(string)
+{
+  return string.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/"/g, '\\"');
+}

@@ -31,18 +31,15 @@ function main()
 {
 	debug('Rewriter is running');
 
-  var rule = new Rule(["a"],"b",["c"]);
-
-  manager.clear_rules();
-  manager.save_rules([rule]);
   manager.restore_rules(function (data)
   {
     var storedrules = data.rules;
+    if (storedrules.length <= 0)
+      debug('No rules were stored.');
     for (var i = 0 ; i < storedrules.length ; i++)
     {
       rule = storedrules[i];
       rules.push(new Rule(rule.match, rule.substitute, rule.url));
-      console.log(rules);
     }
   });
 

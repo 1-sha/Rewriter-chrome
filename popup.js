@@ -19,6 +19,8 @@ var DOM_error;
 
 var manager = new DataManager();
 
+var errors = "";
+
 window.onload = main;
 
 function main()
@@ -34,11 +36,14 @@ function main()
 
 	DOM_addRule.addEventListener('click', add);
 
+	DOM_rules.addEventListener('input', function(){
+		persist(this.value);
+	});
+
 	for (var i = 0; i < DOM_addfield.length; i++)
 	{
 		DOM_addfield[i].addEventListener('click', addfield);
 	}
-
 
 	for (var i = 0; i < DOM_match.length; i++)
 	{
@@ -91,8 +96,6 @@ function add()
 	{
 		DOM_rules.value +=  rule;
 		DOM_rules.value += "\n";
-
-		DOM_error.innerText = "";
 
 		persist(DOM_rules.value);
 	}
@@ -159,11 +162,33 @@ function parse(key)
 
 function findAllRules(content)
 {
-	var pattern = '^"match": \\[".*"\\], "substitute": ".*", "url": \\[".*"\\];$';
-	var mod = "gm";	//global multiline
-	var rgx = new RegExp(pattern, mod);
+	var keys = content.split('\n');
+	var rules = [];
 
-	return content.match(rgx);
+	var pattern = '^"match": \\[".*"\\], "substitute": ".*", "url": \\[".*"\\];$';
+	var mod = "";
+	var rgx_valid = new RegExp(pattern, mod);
+	pattern = '^# .*$';
+	mod = "";
+	var rgx_comment = new RegExp(pattern, mod);
+	pattern = '^$';
+	mod = "";
+	var rgx_empty = new RegExp(pattern, mod);
+
+
+	for (var i = 0 ; i < keys.length ; i++)
+	{
+		if (rgx_valid.test(keys[i]))
+		{
+			rules.push(keys[i]);
+		}
+		else if (!rgx_comment.test(keys[i]) && !rgx_empty.test(keys[i]))
+		{
+			errors += "Line " + (i+1) + " is unvalid. ";
+		}
+	}
+
+	return rules;
 }
 
 function newRemove()
@@ -177,15 +202,16 @@ function newRemove()
 
 function clean(string)
 {
-	return string.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+	return string.replace(/\\n/g,'\n');
 }
 
 function persist(content)
 {
+	errors = "";
+
 	var keys = findAllRules(content);
 	var rules = [];
 	var rule;
-	var errors = "";
 
 	if (keys != null)
 	{
@@ -199,13 +225,13 @@ function persist(content)
 			}
 			else
 			{
-				errors += "Can't save rule n°" + i + ". ";
+				errors += "Can't save rule n°" + (i+1) + ". ";
 			}
 		}
 
 		manager.save_rules(rules);
 		DOM_error.innerText = errors;
-	}
+ 	}
 	else
 	{
 		DOM_error.innerText = "No valid rule found.";
@@ -213,16 +239,17 @@ function persist(content)
 }
 
 function setback()
-{
-	var rules = [];
-	document.addEventListener('RW-merged', function() {
-		rules = manager.rules;
-		for (var i = 0 ; i < rules.length ; i++)
-		{
-			DOM_rules.value +=  rules[i].toString();
+{ 
+	manager.restore_rules( function(data) {
+		var storedrules = data.rules;
+		var rule;
+	    if (storedrules.length <= 0)
+	      console.log('No rules were stored.');
+	    for (var i = 0 ; i < storedrules.length ; i++)
+	    {
+	      	rule = storedrules[i];
+	    	DOM_rules.value += (new Rule(rule.match, rule.substitute, rule.url)).toString();
 			DOM_rules.value += "\n";
-		}
+	    }
 	});
-
-	manager.restore_rules();
 }
