@@ -31,39 +31,67 @@ function main()
 {
 	debug('Rewriter is running');
 
-  manager.restore_rules(function (data)
-  {
-    var storedrules = data.rules;
-    if (storedrules.length <= 0)
-      debug('No rules were stored.');
-    for (var i = 0 ; i < storedrules.length ; i++)
-    {
-      rule = storedrules[i];
-      rules.push(new Rule(rule.match, rule.substitute, rule.url));
-    }
-  });
+	manager.restore_rules(function (data)
+	{
+		var storedrules = data.rules;
+		if (storedrules.length <= 0)
+			debug('No rules were stored.');
+		for (var i = 0 ; i < storedrules.length ; i++)
+		{
+			rule = storedrules[i];
+			rules.push(new Rule(rule.match, rule.substitute, rule.url));
+		}
 
+		rewriter();
+	});
+}
 
+function rewriter()
+{
+	// check if website is in url
+		// build regex with url, don't check http/https 
+	// for all matches, search in page and replace
+		// build regex with
 
+	var urlcheck = false;
 
-  // manager.restore_rules(function (data) {
+	for (var i = 0 ; i < rules.length ; i++)
+	{
+		rule = rules[i];
 
-  //   rules = data.rules;
+		for (var j = 0 ; j < rule.url.length ; j++)
+		{	
+			if (regexurl(rule.url[j]).test(window.location.href))
+			{
+				urlcheck = true;
+			}
+		}
 
-  //   console.log(rules);
-  //   if (rules.length <= 0)
-  //       debug('No rules were stored.');
-  //     else
-  //     {
-  //       debug(rules.length.toString() + ' rules loaded :');
-  //       for (var i = 0; i < rules.length ; i++)
-  //       {
-  //       // do test (page url == rule.url)
-  //       // rewrite stuffs for each match
-  //         rule = rules[i];
-  //         console.log(rule);
-  //         debug(rule.toString());
-  //       }
-  //     }
-  // });
+		if (urlcheck)
+		{
+			console.log('url found');
+			for (var j = 0 ; j < rule.match.length ; j++)
+			{
+				document.documentElement.innerHTML = 
+					document.documentElement.innerHTML.replace
+					(regexmatch(rule.match[j]), rule.substitute);
+				console.log('replaced');
+			}
+		}
+	}
+}
+
+function regexurl(url)
+{
+	url = url.replace(/^(http|https):\/\//, '').replace(/\/$/, '').replace(/\*/g, '.*');
+	var rgx = new RegExp(url);
+	return rgx;
+}
+
+function regexmatch(match)
+{
+	var mod = 'ig';
+	var rgx = new RegExp(match, mod);
+	console.log(rgx);
+	return rgx;
 }
