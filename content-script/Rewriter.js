@@ -11,8 +11,8 @@ var env = 'dev';
 function debug(msg){ if(env=='dev')console.log(msg); }
 
 
-// console.log((new RegExp()));
 window.onload = main;
+
 
 /**
  * Array of rules.
@@ -92,6 +92,5 @@ function regexmatch(match)
 {
 	var mod = 'ig';
 	var rgx = new RegExp(match, mod);
-	console.log(rgx);
 	return rgx;
 }
