@@ -6,19 +6,37 @@
  * @author https://github.com/Peshmelba
  */
 
+/**
+ * DOM elements for rules managing.
+ */
 var DOM_addRule;
 var DOM_newrule;
 var DOM_rules;
 
+/**
+ * DOM elements for rule building.
+ */
 var DOM_addfield;
 var DOM_match;
 var DOM_substitute;
 var DOM_url;
 
+/**
+ * DOM elements for miscellaneous purposes.
+ */
 var DOM_error;
+var DOM_clear;
 
+/**
+ * Manager to save and restore datas from the app to the chrome storage.
+ * @type {DataManager}
+ */
 var manager = new DataManager();
 
+/**
+ * Errors wrote when creating a bad formated rule.
+ * @type {String}
+ */
 var errors = "";
 
 window.onload = main;
@@ -33,12 +51,15 @@ function main()
 	DOM_substitute = document.getElementsByClassName('substitute')[0];
 	DOM_url = document.getElementsByClassName('url');
 	DOM_error = document.getElementById('error');
+	DOM_clear = document.getElementById('clear');
 
 	DOM_addRule.addEventListener('click', add);
 
 	DOM_rules.addEventListener('input', function(){
 		persist(this.value);
 	});
+
+	DOM_clear.addEventListener('click', manager.clear_rules);
 
 	for (var i = 0; i < DOM_addfield.length; i++)
 	{
@@ -61,9 +82,11 @@ function main()
 	setback();
 }
 
+/**
+ * Compose a rule using value of the inputs.
+ */
 function writerule()
 {
-	// compose a rule with the content of inputs
 	var match = [];
 
 	for (var i = 0; i < DOM_match.length; i++)
@@ -88,6 +111,9 @@ function writerule()
 	DOM_newrule.value = rule.toString();
 }
 
+/**
+ * Check if the new rule is valid, then add it to rules.
+ */
 function add()
 {
 	var rule = DOM_newrule.value;
@@ -105,6 +131,9 @@ function add()
 	}
 }
 
+/**
+ * Add a new input to the rule builder.
+ */
 function addfield()
 {
 	var input;
@@ -131,6 +160,9 @@ function addfield()
 	}
 }
 
+/**
+ * Remove the current input from the rule builder.
+ */
 function rmfield()
 {
 	this.parentNode.removeChild(this.previousElementSibling);	// remove input
@@ -143,6 +175,11 @@ function rmfield()
 	writerule();
 }
 
+/**
+ * Parse the given string as JSON and create a Rule object.
+ * @param  {string} key 	A rule as string.
+ * @return {Rule}     		the rule created, return null if invalid format.
+ */
 function parse(key)
 {
 	var rulejson;
@@ -160,6 +197,11 @@ function parse(key)
 	return rule;
 }
 
+/**
+ * Parse a string containing rules as strings, and return all rules found.
+ * @param  {string} content Text that might contain some rules.
+ * @return {array}         	Array of Rule created.
+ */
 function findAllRules(content)
 {
 	var keys = content.split('\n');
@@ -191,6 +233,10 @@ function findAllRules(content)
 	return rules;
 }
 
+/**
+ * Create a button element, add en event listener, and return it.
+ * @return {HTMLButtonElement} Button that removes the input when clicked.
+ */
 function newRemove()
 {
 	var remove = document.createElement('button');
@@ -200,11 +246,20 @@ function newRemove()
 	return remove;
 }
 
+/**
+ * Escape user's input.
+ * @param  {string} string 	User's input.
+ * @return {string}        	Cleaned input, proper for creating a Regexp.
+ */
 function clean(string)
 {
 	return string.replace(/\\n/g,'\n');
 }
 
+/**
+ * Save in the Chrome storage all the valid rules found in the text given.
+ * @param  {string} content 	Text that might contain some rules.
+ */
 function persist(content)
 {
 	errors = "";
@@ -238,6 +293,9 @@ function persist(content)
 	}
 }
 
+/**
+ * Restore rules from the Chrome storage and write a text of all the rules as string.
+ */
 function setback()
 { 
 	manager.restore_rules( function(data) {

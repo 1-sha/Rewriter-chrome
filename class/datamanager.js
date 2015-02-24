@@ -7,24 +7,27 @@
  * @author https://github.com/Peshmelba
  *
  * @method save_rules		Save rules.
- * @method restore_rules	Restore rules.
+ * @method restore_rules	Restore rules and run the callback when it's done.
  * @method clear_rules		Clear rules.
  */
-function DataManager()
+var DataManager = function ()
 {
-	this.save_rules = function(rules) {
-		chrome.storage.sync.set({ "rules" : rules }, function() {
-			console.log('saved rules');
-		});
-	};
 
-	this.restore_rules = function(action) {
-		console.log('restored rules');
-		chrome.storage.sync.get("rules", action);
-	};
+};
 
-	this.clear_rules = function() {
-		chrome.storage.sync.clear();
-		console.log('cleared rules');
-	};
-}
+
+DataManager.prototype.save_rules = function(rules) {
+	chrome.storage.sync.set({ "rules" : rules }, function() {
+		console.log('saved rules');
+	});
+};
+
+DataManager.prototype.restore_rules = function(action) {
+	console.log('restored rules');
+	chrome.storage.sync.get({"rules" : []}, action);
+};
+
+DataManager.prototype.clear_rules = function() {
+	chrome.storage.sync.clear();
+	console.log('cleared rules');
+};

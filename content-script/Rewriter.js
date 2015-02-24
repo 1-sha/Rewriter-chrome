@@ -46,14 +46,14 @@ function main()
 	});
 }
 
+/**
+ * Replace stuff in the current page using rules.
+ */
 function rewriter()
 {
-	// check if website is in url
-		// build regex with url, don't check http/https 
-	// for all matches, search in page and replace
-		// build regex with
-
 	var urlcheck = false;
+	var match = '';
+	var occurence = 0;
 
 	for (var i = 0 ; i < rules.length ; i++)
 	{
@@ -69,18 +69,37 @@ function rewriter()
 
 		if (urlcheck)
 		{
-			console.log('url found');
+			debug('url found');
 			for (var j = 0 ; j < rule.match.length ; j++)
 			{
-				document.documentElement.innerHTML = 
-					document.documentElement.innerHTML.replace
-					(regexmatch(rule.match[j]), rule.substitute);
-				console.log('replaced');
+				match = regexmatch(rule.match[j]);
+				occurence = document.documentElement.innerHTML.match(match)
+
+				if (occurence != null)
+				{
+					document.documentElement.innerHTML = 
+						document.documentElement.innerHTML.replace
+						(match, rule.substitute);
+					debug(occurence.length + "occurences replaced.");
+				} 
+				else
+				{
+					debug('No occurences found.');
+				}
 			}
+		}
+		else
+		{
+			debug('No rules match this url.');
 		}
 	}
 }
 
+/**
+ * Convert rule's url key to a RegExp.
+ * @param  {string} url 	Url key to convert.
+ * @return {RegExp}     	RegExp to match or not page's url.
+ */
 function regexurl(url)
 {
 	url = url.replace(/^(http|https):\/\//, '').replace(/\/$/, '').replace(/\*/g, '.*');
@@ -88,6 +107,11 @@ function regexurl(url)
 	return rgx;
 }
 
+/**
+ * Convert rule's match key to a RegExp.
+ * @param  {string} match	Match key to convert.
+ * @return {RegExp}     	RegExp to match or not page's content.       	
+ */
 function regexmatch(match)
 {
 	var mod = 'ig';

@@ -3,7 +3,7 @@
 
   "name": "Rewriter",
   "description": "Rewrite the content of a webpage using user-defined rules.",
-  "version": "1.0",
+  "version": "1.0.1",
 
   "icons": {  "24": "image/icon24.png",
               "32": "image/icon32.png",
