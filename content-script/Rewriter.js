@@ -13,7 +13,7 @@
  */
 
 
-common.env = 'prod';
+common.env = 'env';
 
 
 window.addEventListener("load", main);

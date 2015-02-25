@@ -18,16 +18,16 @@ var DataManager = function ()
 
 DataManager.prototype.save_rules = function(rules) {
 	chrome.storage.sync.set({ "rules" : rules }, function() {
-		console.log('saving rules');
+		debug('saving rules');
 	});
 };
 
 DataManager.prototype.restore_rules = function(action) {
 	console.log('restoring rules');
-	chrome.storage.sync.get({"rules" : []}, action);
+	debug({"rules" : []}, action);
 };
 
 DataManager.prototype.clear_rules = function() {
 	chrome.storage.sync.clear();
-	console.log('clearing rules');
+	debug('clearing rules');
 };
