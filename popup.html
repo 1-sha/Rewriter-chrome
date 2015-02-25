@@ -18,7 +18,6 @@
         text-align: center;
       }
       .header {
-        width: 100%;
       }
       .panel {
         margin-bottom: 10px;
@@ -27,6 +26,10 @@
         text-align: left;
         margin-left: auto;
         margin-right: auto;
+      }
+      .bottom {
+        width: 100%;
+        text-align: right;
       }
       #newrule {
         width: 83%;
@@ -44,10 +47,9 @@
       }
       #clear {
         font-size: 8px;
-        width: 100%;
-        text-align: right;
       }
     </style>
+    <script src="include/common.js"></script>
     <script src="class/rule.js"></script>
     <script src="class/datamanager.js"></script>
     <script src="popup.js"></script>
@@ -81,7 +83,7 @@
       <div class="panel">
         <textarea id="rules"></textarea>
       </div>
-      <div>
+      <div class="bottom">
         <a id="clear" href="">clear</a>
       </div>
     </div>

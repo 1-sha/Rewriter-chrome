@@ -1,17 +1,22 @@
 /**
  * REWRITER : Rewrite the content of a webpage
  * using user-defined rules.
+ *
+ * rewriter.js : content-script included in all pages.
+ * Contains the core of the app: initialize when the page is loaded,
+ *  proceed the search and replace in the document, log stuff and
+ *  that's all for the moment.
  * 
  * By Peshou, votre cher et tendre.
  *
  * @author https://github.com/Peshmelba
  */
 
-var env = 'dev';
-function debug(msg){ if(env=='dev')console.log(msg); }
+
+common.env = 'prod';
 
 
-window.onload = main;
+window.addEventListener("load", main);
 
 
 /**
@@ -27,8 +32,12 @@ var rule;
 
 var manager = new DataManager();
 
+main();
+
 function main()
 {
+	window.removeEventListener("load", main);
+
 	debug('Rewriter is running');
 
 	manager.restore_rules(function (data)
@@ -36,6 +45,8 @@ function main()
 		var storedrules = data.rules;
 		if (storedrules.length <= 0)
 			debug('No rules were stored.');
+		else
+			debug(storedrules.length + ' rules restored.');
 		for (var i = 0 ; i < storedrules.length ; i++)
 		{
 			rule = storedrules[i];
@@ -59,6 +70,8 @@ function rewriter()
 	{
 		rule = rules[i];
 
+		debug('############## Rule ' + (i+1) + ' ##############\n → ' + rule.toString());
+
 		for (var j = 0 ; j < rule.url.length ; j++)
 		{	
 			if (regexurl(rule.url[j]).test(window.location.href))
@@ -69,7 +82,8 @@ function rewriter()
 
 		if (urlcheck)
 		{
-			debug('url found');
+			debug(' - page\'s url match this rule.');
+
 			for (var j = 0 ; j < rule.match.length ; j++)
 			{
 				match = regexmatch(rule.match[j]);
@@ -80,17 +94,17 @@ function rewriter()
 					document.documentElement.innerHTML = 
 						document.documentElement.innerHTML.replace
 						(match, rule.substitute);
-					debug(occurence.length + "occurences replaced.");
+					debug(' - ' + occurence.length + ' occurences replaced for "' + rule.match[j] + '".');
 				} 
 				else
 				{
-					debug('No occurences found.');
+					debug(' - No occurence found for "'+ rule.match[j] + '".');
 				}
 			}
 		}
 		else
 		{
-			debug('No rules match this url.');
+			debug(' - This rule isn\'t set for this page.');
 		}
 	}
 }

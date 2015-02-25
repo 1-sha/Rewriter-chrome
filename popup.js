@@ -33,12 +33,6 @@ var DOM_clear;
  */
 var manager = new DataManager();
 
-/**
- * Errors wrote when creating a bad formated rule.
- * @type {String}
- */
-var errors = "";
-
 window.onload = main;
 
 function main()
@@ -56,7 +50,8 @@ function main()
 	DOM_addRule.addEventListener('click', add);
 
 	DOM_rules.addEventListener('input', function(){
-		persist(this.value);
+		var res = persist(this.value);
+		DOM_error.innerText = res.errors;
 	});
 
 	DOM_clear.addEventListener('click', manager.clear_rules);
@@ -123,7 +118,8 @@ function add()
 		DOM_rules.value +=  rule;
 		DOM_rules.value += "\n";
 
-		persist(DOM_rules.value);
+		var res = persist(DOM_rules.value);
+		DOM_error.innerText = res.errors;
 	}
 	else
 	{
@@ -176,64 +172,6 @@ function rmfield()
 }
 
 /**
- * Parse the given string as JSON and create a Rule object.
- * @param  {string} key 	A rule as string.
- * @return {Rule}     		the rule created, return null if invalid format.
- */
-function parse(key)
-{
-	var rulejson;
-	var rule = null;
-
-	try {
-		rulejson = JSON.parse('{' + (key.slice(0, -1)) + '}');
-
-		rule = new Rule(rulejson.match, rulejson.substitute, rulejson.url);
-	} catch(e)
-	{
-		console.log(e);
-	}
-	
-	return rule;
-}
-
-/**
- * Parse a string containing rules as strings, and return all rules found.
- * @param  {string} content Text that might contain some rules.
- * @return {array}         	Array of Rule created.
- */
-function findAllRules(content)
-{
-	var keys = content.split('\n');
-	var rules = [];
-
-	var pattern = '^"match": \\[".*"\\], "substitute": ".*", "url": \\[".*"\\];$';
-	var mod = "";
-	var rgx_valid = new RegExp(pattern, mod);
-	pattern = '^# .*$';
-	mod = "";
-	var rgx_comment = new RegExp(pattern, mod);
-	pattern = '^$';
-	mod = "";
-	var rgx_empty = new RegExp(pattern, mod);
-
-
-	for (var i = 0 ; i < keys.length ; i++)
-	{
-		if (rgx_valid.test(keys[i]))
-		{
-			rules.push(keys[i]);
-		}
-		else if (!rgx_comment.test(keys[i]) && !rgx_empty.test(keys[i]))
-		{
-			errors += "Line " + (i+1) + " is unvalid. ";
-		}
-	}
-
-	return rules;
-}
-
-/**
  * Create a button element, add en event listener, and return it.
  * @return {HTMLButtonElement} Button that removes the input when clicked.
  */
@@ -257,43 +195,6 @@ function clean(string)
 }
 
 /**
- * Save in the Chrome storage all the valid rules found in the text given.
- * @param  {string} content 	Text that might contain some rules.
- */
-function persist(content)
-{
-	errors = "";
-
-	var keys = findAllRules(content);
-	var rules = [];
-	var rule;
-
-	if (keys != null)
-	{
-		for (var i = 0 ; i < keys.length ; i++)
-		{
-			rule = parse(keys[i]);
-
-			if (rule != null)
-			{
-				rules.push(rule);
-			}
-			else
-			{
-				errors += "Can't save rule n°" + (i+1) + ". ";
-			}
-		}
-
-		manager.save_rules(rules);
-		DOM_error.innerText = errors;
- 	}
-	else
-	{
-		DOM_error.innerText = "No valid rule found.";
-	}
-}
-
-/**
  * Restore rules from the Chrome storage and write a text of all the rules as string.
  */
 function setback()
@@ -302,7 +203,7 @@ function setback()
 		var storedrules = data.rules;
 		var rule;
 	    if (storedrules.length <= 0)
-	      console.log('No rules were stored.');
+	     	debug('No rules were stored.');
 	    for (var i = 0 ; i < storedrules.length ; i++)
 	    {
 	      	rule = storedrules[i];
