@@ -11,8 +11,9 @@
  * @param {string} substitute  The text that will remplace all the matched strings.
  * @param {array} url          Array of urls where the rule is effective.
  *
- * @method add      Add a new match key to the rule.
- * @method toString Convert the object to a string.
+ * @method addMatch   Add a new match key to the rule.
+ * @method addUrl     Add a new url key to the rule.
+ * @method toString   Convert the object to a string.
  */
 var Rule = function (match, substitute, url)
 {
@@ -21,9 +22,7 @@ var Rule = function (match, substitute, url)
   this.url = url;
 };
 
-
-
-Rule.prototype.add = function(key)
+Rule.prototype.addMatch = function(key)
 {
   this.match.push(key);
 };
@@ -57,6 +56,11 @@ Rule.prototype.toString = function()
   return obj;
 };
 
+/**
+ * Escape some character to make it parsable.
+ * @param  {string} string  String to escape.
+ * @return {string}         String escaped.
+ */
 function esc(string)
 {
   return string.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/"/g, '\\"');

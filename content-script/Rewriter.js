@@ -1,18 +1,23 @@
 /**
  * REWRITER : Rewrite the content of a webpage
  * using user-defined rules.
+ *
+ * rewriter.js : content-script included in all pages.
+ * Contains the core of the app: initialize when the page is loaded,
+ *  proceed the search and replace in the document, log stuff and
+ *  that's all for the moment.
  * 
  * By Peshou, votre cher et tendre.
  *
  * @author https://github.com/Peshmelba
  */
 
-var env = 'dev';
-function debug(msg){ if(env=='dev')console.log(msg); }
+
+common.env = 'prod';
 
 
-// console.log((new RegExp()));
-window.onload = main;
+window.addEventListener("load", main);
+
 
 /**
  * Array of rules.
@@ -27,8 +32,12 @@ var rule;
 
 var manager = new DataManager();
 
+main();
+
 function main()
 {
+	window.removeEventListener("load", main);
+
 	debug('Rewriter is running');
 
 	manager.restore_rules(function (data)
@@ -36,6 +45,8 @@ function main()
 		var storedrules = data.rules;
 		if (storedrules.length <= 0)
 			debug('No rules were stored.');
+		else
+			debug(storedrules.length + ' rules restored.');
 		for (var i = 0 ; i < storedrules.length ; i++)
 		{
 			rule = storedrules[i];
@@ -46,18 +57,20 @@ function main()
 	});
 }
 
+/**
+ * Replace stuff in the current page using rules.
+ */
 function rewriter()
 {
-	// check if website is in url
-		// build regex with url, don't check http/https 
-	// for all matches, search in page and replace
-		// build regex with
-
 	var urlcheck = false;
+	var match = '';
+	var occurence = 0;
 
 	for (var i = 0 ; i < rules.length ; i++)
 	{
 		rule = rules[i];
+
+		debug('############## Rule ' + (i+1) + ' ##############\n → ' + rule.toString());
 
 		for (var j = 0 ; j < rule.url.length ; j++)
 		{	
@@ -69,18 +82,38 @@ function rewriter()
 
 		if (urlcheck)
 		{
-			console.log('url found');
+			debug(' - page\'s url match this rule.');
+
 			for (var j = 0 ; j < rule.match.length ; j++)
 			{
-				document.documentElement.innerHTML = 
-					document.documentElement.innerHTML.replace
-					(regexmatch(rule.match[j]), rule.substitute);
-				console.log('replaced');
+				match = regexmatch(rule.match[j]);
+				occurence = document.documentElement.innerHTML.match(match)
+
+				if (occurence != null)
+				{
+					document.documentElement.innerHTML = 
+						document.documentElement.innerHTML.replace
+						(match, rule.substitute);
+					debug(' - ' + occurence.length + ' occurences replaced for "' + rule.match[j] + '".');
+				} 
+				else
+				{
+					debug(' - No occurence found for "'+ rule.match[j] + '".');
+				}
 			}
+		}
+		else
+		{
+			debug(' - This rule isn\'t set for this page.');
 		}
 	}
 }
 
+/**
+ * Convert rule's url key to a RegExp.
+ * @param  {string} url 	Url key to convert.
+ * @return {RegExp}     	RegExp to match or not page's url.
+ */
 function regexurl(url)
 {
 	url = url.replace(/^(http|https):\/\//, '').replace(/\/$/, '').replace(/\*/g, '.*');
@@ -88,10 +121,14 @@ function regexurl(url)
 	return rgx;
 }
 
+/**
+ * Convert rule's match key to a RegExp.
+ * @param  {string} match	Match key to convert.
+ * @return {RegExp}     	RegExp to match or not page's content.       	
+ */
 function regexmatch(match)
 {
 	var mod = 'ig';
 	var rgx = new RegExp(match, mod);
-	console.log(rgx);
 	return rgx;
 }
