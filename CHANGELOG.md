@@ -1,3 +1,9 @@
+## v1.0.1
+
+- **Bugfix:** Better initialization at window's load. ([8e981adf](https://github.com/Peshmelba/Rewriter-chrome/commit/8e981adf276b828720f14c420baedaf8c5c6310f))
+- **Bugfix:** Better js log system, disabled by default. ([8e981adf](https://github.com/Peshmelba/Rewriter-chrome/commit/8e981adf276b828720f14c420baedaf8c5c6310f))
+- **Bugfix:** Better errors management in the Rule-builder. ([8e981adf](https://github.com/Peshmelba/Rewriter-chrome/commit/8e981adf276b828720f14c420baedaf8c5c6310f))
+
 ## v1.0.0
 
 - **Feature:** Rule-builder and manager in browser-action's pop-up.
