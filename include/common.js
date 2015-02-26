@@ -13,6 +13,11 @@ var common = {
 };
 
 
+
+common.env = 'dev';
+
+
+
 /**
  * Print a message if the environment is Development.
  * @param  {string} msg 	Message to print

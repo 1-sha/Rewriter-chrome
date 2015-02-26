@@ -13,9 +13,6 @@
  */
 
 
-common.env = 'env';
-
-
 window.addEventListener("load", main);
 
 

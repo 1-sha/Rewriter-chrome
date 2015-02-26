@@ -23,8 +23,8 @@ DataManager.prototype.save_rules = function(rules) {
 };
 
 DataManager.prototype.restore_rules = function(action) {
-	console.log('restoring rules');
-	debug({"rules" : []}, action);
+	debug('restoring rules');
+	chrome.storage.sync.get({"rules" : []}, action);
 };
 
 DataManager.prototype.clear_rules = function() {
