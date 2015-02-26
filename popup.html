@@ -29,6 +29,11 @@
       }
       .bottom {
         width: 100%;
+      }
+      .option {
+        text-align: left;
+      }
+      .action {
         text-align: right;
       }
       #newrule {
@@ -83,9 +88,16 @@
       <div class="panel">
         <textarea id="rules"></textarea>
       </div>
-      <div class="bottom">
-        <a id="clear" href="">clear</a>
-      </div>
+      <table class="bottom"><tr><td>
+        <div class="option">
+          <input type="checkbox" id="autoupdate"><label for="autoupdate">Auto-update (might slow down your browser)</label><br/>
+          <input type="checkbox" id="debugmode"><label for="debugmode">Debug Mode</label>
+        </div>
+      </td><td>
+        <div class="action">
+          <a id="clear" href="">clear</a>
+        </div>
+      </td></tr></table>
     </div>
   </body>
 </html>

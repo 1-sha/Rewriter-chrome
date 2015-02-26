@@ -26,6 +26,8 @@ var DOM_url;
  */
 var DOM_error;
 var DOM_clear;
+var DOM_autoupdate;
+var DOM_debugmode;
 
 /**
  * Manager to save and restore datas from the app to the chrome storage.
@@ -46,6 +48,8 @@ function main()
 	DOM_url = document.getElementsByClassName('url');
 	DOM_error = document.getElementById('error');
 	DOM_clear = document.getElementById('clear');
+	DOM_autoupdate = document.getElementById('autoupdate');
+	DOM_debugmode = document.getElementById('debugmode');
 
 	DOM_addRule.addEventListener('click', add);
 
