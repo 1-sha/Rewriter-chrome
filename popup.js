@@ -53,6 +53,11 @@ function main()
 
 	DOM_addRule.addEventListener('click', add);
 
+	DOM_autoupdate.addEventListener('click', setAutoUpdate);
+
+	DOM_debugmode.addEventListener('click', setDebugMode);
+
+
 	DOM_rules.addEventListener('input', function(){
 		var res = persist(this.value);
 		DOM_error.innerText = res.errors;
@@ -215,4 +220,24 @@ function setback()
 			DOM_rules.value += "\n";
 	    }
 	});
+	manager.restore_autoupdate( function(data));
+}
+
+function setAutoUpdate()
+{
+	console.log('autoupdate');
+}
+
+function setDebugMode()
+{
+	var val = DOM_debugmode.checked;
+	if (val)
+	{
+		common.env = "dev";
+		manager.save_debugmode(val);
+	}
+	else
+	{
+		common.env = "prod";
+	}
 }

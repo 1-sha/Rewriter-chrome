@@ -31,3 +31,25 @@ DataManager.prototype.clear_rules = function() {
 	chrome.storage.sync.clear();
 	debug('clearing rules');
 };
+
+DataManager.prototype.save_autoupdate = function(autoupdate) {
+	chrome.storage.sync.set({ "autoupdate" : autoupdate }, function() {
+		debug('saving auto-update to ' + autoupdate);
+	});
+};
+
+DataManager.prototype.restore_autoupdate = function(action) {
+	debug('restoring auto-update');
+	chrome.storage.sync.get({"autoupdate" : false}, action);
+};
+
+DataManager.prototype.save_debugmode = function(debugmode) {
+	chrome.storage.sync.set({ "debugmode" : debugmode }, function() {
+		debug('saving debug mode to ' + debugmode);
+	});
+};
+
+DataManager.prototype.restore_debugmode = function(action) {
+	debug('restoring debug mode');
+	chrome.storage.sync.get({"debugmode" : false}, action);
+};
