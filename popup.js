@@ -208,6 +208,20 @@ function clean(string)
  */
 function setback()
 { 
+	manager.restore_debugmode( function(data)
+	{
+		var debugmode = data.debugmode;
+		console.log(debugmode);
+		DOM_debugmode.checked = debugmode;
+		setDebugMode();
+	});
+
+	manager.restore_autoupdate( function(data)
+	{
+		var autoupdate = data.autoupdate;
+		DOM_autoupdate.checked = autoupdate;
+	});
+
 	manager.restore_rules( function(data) {
 		var storedrules = data.rules;
 		var rule;
@@ -220,12 +234,25 @@ function setback()
 			DOM_rules.value += "\n";
 	    }
 	});
-	manager.restore_autoupdate( function(data));
 }
 
 function setAutoUpdate()
 {
-	console.log('autoupdate');
+	var val = DOM_autoupdate.checked;
+	if (val)
+	{
+// send start auto update
+// chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    //   chrome.tabs.sendMessage(tabs[0].id, {type: "runMonarch"})
+    // });
+debug('send start auto update');
+	}
+	else
+	{
+// send stop auto update
+debug('send stop auto update');
+	}
+	manager.save_autoupdate(val);
 }
 
 function setDebugMode()
@@ -234,10 +261,11 @@ function setDebugMode()
 	if (val)
 	{
 		common.env = "dev";
-		manager.save_debugmode(val);
 	}
 	else
 	{
 		common.env = "prod";
 	}
+
+	manager.save_debugmode(val);
 }

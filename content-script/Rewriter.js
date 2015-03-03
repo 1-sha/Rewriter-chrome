@@ -29,11 +29,30 @@ var rule;
 
 var manager = new DataManager();
 
-main();
+var autoupdate;
 
 function main()
 {
 	window.removeEventListener("load", main);
+
+
+	chrome.runtime.onMessage.addListener(function(query){
+		if (query.type == 'start autoupdate')
+		{
+			if (autoupdate == undefined)
+			{
+				autoupdate = window.setInterval(rewriter, 100);
+			}
+		}
+		if (query.type == 'stop autoupdate')
+		{
+			if (autoupdate != undefined)
+			{
+				window.clearInterval(autoupdate);
+				autoupdate = undefined;
+			}
+		}
+	});
 
 	debug('Rewriter is running');
 

@@ -51,5 +51,5 @@ DataManager.prototype.save_debugmode = function(debugmode) {
 
 DataManager.prototype.restore_debugmode = function(action) {
 	debug('restoring debug mode');
-	chrome.storage.sync.get({"debugmode" : false}, action);
+	chrome.storage.sync.get({"debugmode" : (common.env == "dev")}, action);
 };
