@@ -13,8 +13,20 @@
  */
 
 
-window.addEventListener("load", main);
+var manager = new DataManager();
+manager.restore_debugmode( function(data)
+{
+	var debugmode = data.debugmode;
 
+	if (debugmode)
+	{
+		common.env = "dev";
+	}
+	else
+	{
+		common.env = "prod";
+	}
+});
 
 /**
  * Array of rules.
@@ -27,34 +39,64 @@ var rules = [];
  */
 var rule;
 
-var manager = new DataManager();
-
 var autoupdate;
+
+
+
+
+debug("The document state is : " + document.readyState);
+if (document.readyState === "complete")
+	main();
+else
+	window.addEventListener("load", main);
+
 
 function main()
 {
 	window.removeEventListener("load", main);
-
+	debug('Rewriter is running');
 
 	chrome.runtime.onMessage.addListener(function(query){
-		if (query.type == 'start autoupdate')
+		debug('received query :');
+
+		switch (query.type)
 		{
-			if (autoupdate == undefined)
-			{
-				autoupdate = window.setInterval(rewriter, 100);
-			}
-		}
-		if (query.type == 'stop autoupdate')
-		{
-			if (autoupdate != undefined)
-			{
-				window.clearInterval(autoupdate);
-				autoupdate = undefined;
-			}
+			case 'start autoupdate':
+				debug('    start autoupdate');
+				if (autoupdate == undefined)
+				{
+					autoupdate = window.setInterval(rewriter, 100);
+				}
+				break;
+		
+			case 'stop autoupdate':
+				debug('    stop autoupdate');
+				if (autoupdate != undefined)
+				{
+					window.clearInterval(autoupdate);
+					autoupdate = undefined;
+				}
+				break;
+
+			case 'start debugmode':
+				debug('    start debugmode');
+				common.env = "dev";
+				break;
+		
+			case 'stop debugmode':
+				debug('    stop debugmode');
+				common.env = "prod";
+				break;
 		}
 	});
 
-	debug('Rewriter is running');
+	manager.restore_autoupdate(function (data)
+	{
+		if (data.autoupdate)
+		{
+			autoupdate = window.setInterval(rewriter, 100);
+		}
+	});
 
 	manager.restore_rules(function (data)
 	{
