@@ -28,22 +28,16 @@ manager.restore_debugmode( function(data)
 	}
 });
 
-/**
- * Array of rules.
- * @type {Array}
- */
+
 var rules = [];
-/**
- * A rule.
- * @type {Rule}
- */
 var rule;
 
 var autoupdate;
 
 
-
-
+/**
+ * Handle document's state to run the script.
+ */
 debug("The document state is : " + document.readyState);
 if (document.readyState === "complete")
 	main();

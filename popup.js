@@ -211,7 +211,7 @@ function setback()
 	manager.restore_debugmode( function(data)
 	{
 		var debugmode = data.debugmode;
-		
+
 		DOM_debugmode.checked = debugmode;
 		setDebugMode();
 	});
@@ -236,6 +236,9 @@ function setback()
 	});
 }
 
+/**
+ * Send AutoUpdate checkbox's status to the content-script.
+ */
 function setAutoUpdate()
 {
 	var val = DOM_autoupdate.checked;
@@ -256,6 +259,9 @@ function setAutoUpdate()
 	manager.save_autoupdate(val);
 }
 
+/**
+ * Send DebugMode checkbox's status to the content-script.
+ */
 function setDebugMode()
 {
 	var val = DOM_debugmode.checked;
