@@ -241,14 +241,17 @@ function setAutoUpdate()
 	if (val)
 	{
 // send start auto update
-// chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-    //   chrome.tabs.sendMessage(tabs[0].id, {type: "runMonarch"})
-    // });
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    	chrome.tabs.sendMessage(tabs[0].id, {type: "start autoupdate"})
+    });
 debug('send start auto update');
 	}
 	else
 	{
 // send stop auto update
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    	chrome.tabs.sendMessage(tabs[0].id, {type: "stop autoupdate"})
+    });
 debug('send stop auto update');
 	}
 	manager.save_autoupdate(val);
